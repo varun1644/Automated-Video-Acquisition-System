@@ -1,44 +1,45 @@
-# 🎥 Automated Video Acquisition System
+# Automated Video Acquisition System
 
 An automated mechatronics system designed to capture video of an object using a linear positioning mechanism. The system integrates mechanical, electrical, and software components to achieve precise motion and synchronized video recording.
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 This project uses a lead screw-based linear mechanism to move a camera vertically and capture video automatically when triggered by limit switches.
 
-📌 Key Idea:
-- Move camera using stepper motor
-- Detect position using limit switches
-- Automatically start/stop video recording
+Key Features:
+- Automated camera movement using stepper motor
+- Position detection using limit switches
+- Automatic video recording based on position
+- Modular and extensible architecture
 
 ---
 
-## ⚙️ System Architecture
+## System Architecture
 
-- Controller: PC with Python
+- Controller: PC running Python
 - Actuator: Stepper Motor
 - Mechanism: Lead Screw Linear System
 - Sensors: Limit Switches
-- Vision: Industrial Camera (HIK Vision)
+- Vision: Industrial Camera
 
 ---
 
-## 🧠 Working Principle
+## Working Principle
 
 1. System starts at home position
 2. Motor moves upward
-3. On reaching top limit → reverses direction
-4. Camera starts recording while moving downward
+3. On reaching top limit, direction reverses
+4. Camera records while moving downward
 5. Stops recording at bottom limit
 
 ---
 
-## 🔩 Hardware Components
+## Hardware Components
 
 - Stepper Motor (12V)
-- L298 Motor Driver
+- Motor Driver (L298 / TB6600 recommended)
 - Lead Screw Mechanism
 - Limit Switches
 - DAQ (Data Acquisition System)
@@ -46,7 +47,7 @@ This project uses a lead screw-based linear mechanism to move a camera verticall
 
 ---
 
-## 💻 Software Used
+## Software Stack
 
 - Python
 - OpenCV
@@ -55,36 +56,4 @@ This project uses a lead screw-based linear mechanism to move a camera verticall
 
 ---
 
-## 🧾 Code Features
-
-- Stepper motor control (CW & CCW)
-- Limit switch signal reading
-- Video acquisition integration
-- DAQ communication
-
----
-
-## 📊 Control System
-
-Closed-loop system:
-Sensor → Controller → Actuator
-
----
-
-## 🔮 Future Improvements
-
-- Object detection integration (YOLO)
-- Automated defect detection
-- 3D reconstruction using captured images
-- Replace L298 with TB6600 driver
-
----
-
-## 📸 Results
-
-The system successfully captures video automatically based on position using a linear mechanism.
-
----
-
-## 📂 Project Structure
-
+## Project Structure
