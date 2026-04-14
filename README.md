@@ -1,36 +1,90 @@
-# Automated Video Acquisition System using Linear Positioning
+# 🎥 Automated Video Acquisition System
 
-## Overview
+An automated mechatronics system designed to capture video of an object using a linear positioning mechanism. The system integrates mechanical, electrical, and software components to achieve precise motion and synchronized video recording.
 
-This project presents an automated system for capturing video using a linear positioning mechanism. The system integrates mechanical motion, control systems, and computer vision.
+---
 
-## Features
+## 🚀 Project Overview
 
-* Lead screw-based linear motion system
-* Closed-loop control using limit switches
-* Automated video capture using industrial camera
-* Integration with Python and OpenCV
- <img width="627" height="318" alt="image" src="https://github.com/user-attachments/assets/864d52a3-ed66-4406-8d90-6656e8b8c7d2" />
+This project uses a lead screw-based linear mechanism to move a camera vertically and capture video automatically when triggered by limit switches.
 
+📌 Key Idea:
+- Move camera using stepper motor
+- Detect position using limit switches
+- Automatically start/stop video recording
 
-## Components
+---
 
-* Stepper Motor
-* L298 Motor Driver
-* Limit Switches
-* DAQ System
-* Industrial Camera
+## ⚙️ System Architecture
 
-## Working
+- Controller: PC with Python
+- Actuator: Stepper Motor
+- Mechanism: Lead Screw Linear System
+- Sensors: Limit Switches
+- Vision: Industrial Camera (HIK Vision)
 
-The system moves the camera along a linear path. When the lower limit switch is triggered, video recording starts automatically.
+---
 
-## Applications
+## 🧠 Working Principle
 
-* Manufacturing inspection
-* Robotics monitoring
-* Automated surveillance systems
+1. System starts at home position
+2. Motor moves upward
+3. On reaching top limit → reverses direction
+4. Camera starts recording while moving downward
+5. Stops recording at bottom limit
 
-## Author
+---
 
-Varun K
+## 🔩 Hardware Components
+
+- Stepper Motor (12V)
+- L298 Motor Driver
+- Lead Screw Mechanism
+- Limit Switches
+- DAQ (Data Acquisition System)
+- Industrial Camera
+
+---
+
+## 💻 Software Used
+
+- Python
+- OpenCV
+- NumPy
+- MVS (Machine Vision Software)
+
+---
+
+## 🧾 Code Features
+
+- Stepper motor control (CW & CCW)
+- Limit switch signal reading
+- Video acquisition integration
+- DAQ communication
+
+---
+
+## 📊 Control System
+
+Closed-loop system:
+Sensor → Controller → Actuator
+
+---
+
+## 🔮 Future Improvements
+
+- Object detection integration (YOLO)
+- Automated defect detection
+- 3D reconstruction using captured images
+- Replace L298 with TB6600 driver
+
+---
+
+## 📸 Results
+
+The system successfully captures video automatically based on position using a linear mechanism.
+
+---
+
+## 📂 Project Structure
+
