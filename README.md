@@ -10,6 +10,8 @@ This project presents an automated system for capturing video using a linear pos
 * Closed-loop control using limit switches
 * Automated video capture using industrial camera
 * Integration with Python and OpenCV
+ <img width="627" height="318" alt="image" src="https://github.com/user-attachments/assets/864d52a3-ed66-4406-8d90-6656e8b8c7d2" />
+
 
 ## Components
 
