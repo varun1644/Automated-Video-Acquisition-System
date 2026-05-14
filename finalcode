@@ -1,0 +1,237 @@
+# -*- coding:utf-8 -*-
+
+import pprint
+import random
+import sys
+import cv2
+import threading
+import time
+import nidaqmx
+
+from ctypes import *
+from nidaqmx.constants import LineGrouping
+from time import sleep
+
+sys.path.append("C:\\Program Files (x86)\\MVS\\Development\\Samples\\Python\\MvImport")
+
+from MvCameraControl_class import *
+
+pp = pprint.PrettyPrinter(indent=4)
+
+g_bExit = False
+flag = False
+count = 0
+
+
+# -------------------------------
+# READ LIMIT SWITCH VALUES
+# -------------------------------
+
+def read_motor_ls():
+
+    with nidaqmx.Task() as digital_read_task:
+
+        digital_read_task.di_channels.add_di_chan(
+            'cDAQ1Mod6/port0/line1',
+            line_grouping=LineGrouping.CHAN_PER_LINE
+        )
+
+        digital_data = digital_read_task.read()
+
+        pp.pprint(digital_data)
+
+        return digital_data
+
+
+def read_away_ls():
+
+    with nidaqmx.Task() as digital_read_task:
+
+        digital_read_task.di_channels.add_di_chan(
+            'cDAQ1Mod6/port0/line0',
+            line_grouping=LineGrouping.CHAN_PER_LINE
+        )
+
+        digital_data = digital_read_task.read()
+
+        pp.pprint(digital_data)
+
+        return digital_data
+
+
+# -------------------------------
+# STEPPER MOTOR CONTROL
+# -------------------------------
+
+def down_motor():
+
+    with nidaqmx.Task() as digital_write_task:
+
+        digital_write_task.do_channels.add_do_chan(
+            'cDAQ1Mod6/port0/line0:3',
+            line_grouping=LineGrouping.CHAN_FOR_ALL_LINES
+        )
+
+        print(digital_write_task.write([1], auto_start=True))
+        time.sleep(0.0001)
+
+        print(digital_write_task.write([4], auto_start=True))
+        time.sleep(0.0001)
+
+        print(digital_write_task.write([2], auto_start=True))
+        time.sleep(0.0001)
+
+        print(digital_write_task.write([8], auto_start=True))
+        time.sleep(0.0001)
+
+
+def up_motor():
+
+    with nidaqmx.Task() as digital_write_task:
+
+        digital_write_task.do_channels.add_do_chan(
+            'cDAQ1Mod6/port0/line0:3',
+            line_grouping=LineGrouping.CHAN_FOR_ALL_LINES
+        )
+
+        print(digital_write_task.write([8], auto_start=True))
+        time.sleep(0.0001)
+
+        print(digital_write_task.write([2], auto_start=True))
+        time.sleep(0.0001)
+
+        print(digital_write_task.write([4], auto_start=True))
+        time.sleep(0.0001)
+
+        print(digital_write_task.write([1], auto_start=True))
+        time.sleep(0.0001)
+
+
+def stop():
+
+    with nidaqmx.Task() as digital_write_task:
+
+        digital_write_task.do_channels.add_do_chan(
+            'cDAQ1Mod6/port0/line0:3',
+            line_grouping=LineGrouping.CHAN_FOR_ALL_LINES
+        )
+
+        print(digital_write_task.write([0], auto_start=True))
+
+
+# -------------------------------
+# CAMERA RECORDING FUNCTION
+# -------------------------------
+
+def record_video():
+
+    deviceList = MV_CC_DEVICE_INFO_LIST()
+    tlayerType = MV_GIGE_DEVICE | MV_USB_DEVICE
+
+    ret = MvCamera.MV_CC_EnumDevices(tlayerType, deviceList)
+
+    if ret != 0:
+        print("enum devices fail! ret[0x%x]" % ret)
+        sys.exit()
+
+    if deviceList.nDeviceNum == 0:
+        print("find no device!")
+        sys.exit()
+
+    print("Find %d devices!" % deviceList.nDeviceNum)
+
+    cam = MvCamera()
+
+    stDeviceList = cast(
+        deviceList.pDeviceInfo[0],
+        POINTER(MV_CC_DEVICE_INFO)
+    ).contents
+
+    ret = cam.MV_CC_CreateHandle(stDeviceList)
+
+    if ret != 0:
+        print("create handle fail! ret[0x%x]" % ret)
+        sys.exit()
+
+    ret = cam.MV_CC_OpenDevice(MV_ACCESS_Exclusive, 0)
+
+    if ret != 0:
+        print("open device fail! ret[0x%x]" % ret)
+        sys.exit()
+
+    ret = cam.MV_CC_StartGrabbing()
+
+    if ret != 0:
+        print("start grabbing fail! ret[0x%x]" % ret)
+        sys.exit()
+
+    stRecordPar = MV_CC_RECORD_PARAM()
+
+    stRecordPar.enPixelType = 0
+    stRecordPar.nWidth = 640
+    stRecordPar.nHeight = 480
+    stRecordPar.fFrameRate = 30
+    stRecordPar.nBitRate = 1000
+    stRecordPar.enRecordFmtType = MV_FormatType_AVI
+    stRecordPar.strFilePath = b"Record.avi"
+
+    ret = cam.MV_CC_StartRecord(stRecordPar)
+
+    if ret != 0:
+        print("start Record fail! ret[0x%x]" % ret)
+        sys.exit()
+
+    print("Recording Started")
+
+    while True:
+
+        read_m = read_motor_ls()
+
+        if read_m:
+            print("Upper Limit Switch Triggered")
+            break
+
+    ret = cam.MV_CC_StopRecord()
+
+    if ret != 0:
+        print("stop Record fail! ret[0x%x]" % ret)
+
+    ret = cam.MV_CC_StopGrabbing()
+
+    if ret != 0:
+        print("stop grabbing fail! ret[0x%x]" % ret)
+
+    ret = cam.MV_CC_CloseDevice()
+
+    if ret != 0:
+        print("close device fail! ret[0x%x]" % ret)
+
+    ret = cam.MV_CC_DestroyHandle()
+
+    if ret != 0:
+        print("destroy handle fail! ret[0x%x]" % ret)
+
+    print("Recording Stopped")
+
+
+# -------------------------------
+# MAIN LOOP
+# -------------------------------
+
+while True:
+
+    read_m = read_motor_ls()
+    read_a = read_away_ls()
+
+    if read_a == True or (read_a == False and read_m == False):
+        up_motor()
+
+    if read_m == True:
+
+        if count != 0:
+            flag = True
+            break
+
+record_video()
+
+stop()
