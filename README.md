@@ -44,6 +44,9 @@ The primary objective of the project is to:
 The mechanism first moves to the home position, after which the camera begins recording while the linear system moves downward automatically. 
 
 ---
+## Flow chart ##
+<img width="737" height="612" alt="image" src="https://github.com/user-attachments/assets/9e0d126e-890f-4bb9-b183-e0b20cc65cda" />
+
 
 # **Mechatronics Perspective**
 
@@ -105,6 +108,9 @@ The limit switches are used for:
 
 
 ---
+# Control System Block Diagram #
+<img width="882" height="391" alt="image" src="https://github.com/user-attachments/assets/f495a297-1cda-4b43-944d-edd04dec69f3" />
+
 
 # **System Architecture**
 
